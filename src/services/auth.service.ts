@@ -4,7 +4,11 @@ import { signAccessToken } from "../utils/jwt";
 import { generateOtp } from "../utils/otp";
 import { sendOtpEmail } from "./email.service";
 
-export const loginUserService = async (email: string, password: string) => {
+export const loginUserService = async (
+  email: string,
+  password: string,
+  rememberMe: boolean
+) => {
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
@@ -21,7 +25,7 @@ export const loginUserService = async (email: string, password: string) => {
     throw new Error("Please verify your email using OTP");
   }
 
-  const token = signAccessToken({ userId: user._id.toString() });
+  const token = signAccessToken({ userId: user._id.toString(), rememberMe });
 
   return {
     token,

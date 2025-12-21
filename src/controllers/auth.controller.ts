@@ -9,7 +9,7 @@ import status from "http-status-codes";
 
 export const loginUser = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe = false } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({
@@ -18,7 +18,7 @@ export const loginUser = async (req: Request, res: Response) => {
       });
     }
 
-    const result = await loginUserService(email, password);
+    const result = await loginUserService(email, password, rememberMe);
     const { token, user } = result;
 
     sendResponse(res, status.OK, {
