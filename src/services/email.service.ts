@@ -27,7 +27,7 @@ export const sendOtpEmail = async (email: string, otp: string) => {
       </p>
 
       <p style="color: #555555; font-size: 14px;">
-        Thank you for signing up. Please use the following One-Time Password (OTP) to verify your email address.
+        Thank you for using Tennis app. Please use the following One-Time Password (OTP) to verify your email address.
       </p>
 
       <div style="text-align: center; margin: 24px 0;">

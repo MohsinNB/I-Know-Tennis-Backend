@@ -1,13 +1,10 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { getProfile, updateMyName } from "../controllers/profile.controller";
 
 const router = Router();
 
-router.get("/me", authMiddleware, (req, res) => {
-  res.json({
-    success: true,
-    message: "You are authenticated",
-  });
-});
+router.get("/me", authMiddleware, getProfile);
+router.patch("/me", authMiddleware, updateMyName);
 
 export default router;

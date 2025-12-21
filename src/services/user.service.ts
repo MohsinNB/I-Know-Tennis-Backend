@@ -8,7 +8,7 @@ export const registerUserService = async (data: any) => {
     data;
 
   if (!agreedToTerms) {
-    throw new Error("You must agree to the terms");
+    throw new Error("You must agree to the terms to use this site");
   }
 
   if (password !== confirmPassword) {

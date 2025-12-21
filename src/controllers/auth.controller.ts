@@ -1,7 +1,11 @@
 import { Request, Response } from "express";
-import { loginUserService } from "../services/auth.service";
+import {
+  forgotPasswordService,
+  loginUserService,
+  resetPasswordService,
+} from "../services/auth.service";
 import { sendResponse } from "../utils/sendResponse";
-import codes from "http-status-codes";
+import status from "http-status-codes";
 
 export const loginUser = async (req: Request, res: Response) => {
   try {
@@ -17,7 +21,7 @@ export const loginUser = async (req: Request, res: Response) => {
     const result = await loginUserService(email, password);
     const { token, user } = result;
 
-    sendResponse(res, codes.OK, {
+    sendResponse(res, status.OK, {
       success: true,
       message: "Login successfully",
       data: {
@@ -26,7 +30,59 @@ export const loginUser = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    sendResponse(res, codes.BAD_REQUEST, {
+    sendResponse(res, status.BAD_REQUEST, {
+      success: false,
+      message: error.message,
+    });
+  }
+};
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return sendResponse(res, status.BAD_REQUEST, {
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    const result = await forgotPasswordService(email);
+
+    sendResponse(res, status.OK, {
+      success: true,
+      message: "OTP sent to your email",
+      data: {
+        otp: result,
+      },
+    });
+  } catch (error: any) {
+    sendResponse(res, status.BAD_REQUEST, {
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return sendResponse(res, status.BAD_REQUEST, {
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    await resetPasswordService(email, otp, newPassword);
+
+    sendResponse(res, status.OK, {
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (error: any) {
+    sendResponse(res, status.BAD_REQUEST, {
       success: false,
       message: error.message,
     });
