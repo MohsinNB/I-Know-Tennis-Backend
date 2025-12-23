@@ -20,31 +20,50 @@ export interface IQuiz {
 }
 
 const OptionSchema = new Schema<IOption>({
-  text: { type: String, required: true },
+  text: { type: String, required: true }, // REMOVED unique: true
   isCorrect: { type: Boolean, required: true },
 });
 
 const QuestionSchema = new Schema<IQuestion>({
-  question: { type: String, required: true },
+  question: { type: String, required: true }, // REMOVED unique: true
   options: {
     type: [OptionSchema],
-    validate: [(v: any[]) => v.length === 4, "4 options required"],
+    validate: [
+      {
+        validator: (v: any[]) => v.length === 4,
+        message: "4 options required",
+      },
+      {
+        // Validates that options are unique WITHIN this specific question
+        validator: function (options: IOption[]) {
+          const texts = options.map((o) => o.text.toLowerCase().trim());
+          return new Set(texts).size === texts.length;
+        },
+        message: "Duplicate options found in this question.",
+      },
+    ],
   },
   points: { type: Number, default: 5 },
 });
 
 const QuizSchema = new Schema<IQuiz>(
   {
-    title: { type: String, required: true },
+    title: { type: String, required: true, unique: true }, // Keep this! Titles should be globally unique.
     stack: {
       type: String,
       enum: ["newest", "popular", "most-popular"],
       default: "newest",
-      required: true,
     },
     questions: {
       type: [QuestionSchema],
-      // validate: [(v: any[]) => v.length === 20, "20 questions required"],
+      validate: {
+        // Validates that questions are unique WITHIN this specific quiz
+        validator: function (questions: IQuestion[]) {
+          const texts = questions.map((q) => q.question.toLowerCase().trim());
+          return new Set(texts).size === texts.length;
+        },
+        message: "Duplicate questions found in this quiz.",
+      },
     },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },

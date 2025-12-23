@@ -14,7 +14,7 @@ export const submitQuiz = async (req: AuthRequest, res: Response) => {
 
     sendResponse(res, status.OK, {
       success: true,
-      message: "Login successfully",
+      message: "Quiz submitted successfully",
       data: {
         result,
       },

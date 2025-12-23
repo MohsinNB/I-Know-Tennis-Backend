@@ -41,26 +41,6 @@ export const getDashboardStatsService = async (filter?: string) => {
   };
 };
 
-const getStartDate = (filter: string) => {
-  const now = new Date();
-
-  switch (filter) {
-    case "daily":
-      now.setHours(0, 0, 0, 0);
-      break;
-    case "weekly":
-      now.setDate(now.getDate() - 7);
-      break;
-    case "monthly":
-      now.setMonth(now.getMonth() - 1);
-      break;
-    case "yearly":
-      now.setFullYear(now.getFullYear() - 1);
-      break;
-  }
-
-  return now;
-};
 export const getAllUsersService = async () => {
   return await User.find()
     .select("_id name email phoneNumber role isEmailVerified createdAt")
@@ -102,4 +82,41 @@ export const getLeaderboardService = async () => {
       $sort: { totalScore: -1 },
     },
   ]);
+};
+export const getQuizAttendanceService = async (filter: string) => {
+  const startDate = getStartDate(filter);
+
+  const count = await QuizAttempt.countDocuments({
+    status: "completed",
+    createdAt: { $gte: startDate },
+  });
+
+  return count;
+};
+
+const getStartDate = (filter: string) => {
+  const now = new Date();
+
+  switch (filter) {
+    case "daily":
+      now.setHours(0, 0, 0, 0);
+      break;
+
+    case "weekly":
+      now.setDate(now.getDate() - 7);
+      break;
+
+    case "monthly":
+      now.setMonth(now.getMonth() - 1);
+      break;
+
+    case "yearly":
+      now.setFullYear(now.getFullYear() - 1);
+      break;
+
+    default:
+      throw new Error("Invalid filter type");
+  }
+
+  return now;
 };
