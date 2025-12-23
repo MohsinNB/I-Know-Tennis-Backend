@@ -29,20 +29,35 @@ export const UserSchema = new Schema<IUser>(
       select: false,
     },
 
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      required: true,
+      default: "user",
+    },
+
+    profilePic: {
+      type: String,
+      default: "",
+    },
+
     agreedToTerms: {
       type: Boolean,
       required: true,
       default: false,
     },
+
     isEmailVerified: {
       type: Boolean,
       default: false,
     },
 
-    emailOtp: { type: String, required: false },
+    emailOtp: {
+      type: String,
+    },
+
     emailOtpExpiresAt: {
       type: Date,
-      required: false,
     },
   },
   { timestamps: true }

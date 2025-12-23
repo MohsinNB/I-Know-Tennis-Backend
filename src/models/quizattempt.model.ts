@@ -12,6 +12,7 @@ export interface IQuizAttempt {
   quizId: Types.ObjectId;
   answers: IAnswer[];
   totalScore: number;
+  status: "pending" | "completed";
 }
 
 const AnswerSchema = new Schema<IAnswer>({
@@ -52,6 +53,11 @@ const QuizAttemptSchema = new Schema<IQuizAttempt>(
     totalScore: {
       type: Number,
       required: true,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "completed"],
+      default: "pending",
     },
   },
   { timestamps: true }

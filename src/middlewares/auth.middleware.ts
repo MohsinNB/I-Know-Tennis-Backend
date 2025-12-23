@@ -4,6 +4,7 @@ import { JWT_ACCESS_SECRET } from "../app/config/env";
 
 interface JwtPayload {
   userId: string;
+  role: "user" | "admin";
 }
 
 export interface AuthRequest extends Request {

@@ -3,12 +3,15 @@ import { JWT_ACCESS_SECRET, JWT_ACCESS_EXPIRES } from "../app/config/env";
 
 export interface AccessTokenPayload {
   userId: string;
-  rememberMe: boolean;
+  role: string;
 }
 
 /** create access token */
-export function signAccessToken(payload: AccessTokenPayload) {
-  const expiresIn = payload.rememberMe ? "30d" : JWT_ACCESS_EXPIRES;
+export function signAccessToken(
+  payload: AccessTokenPayload,
+  rememberMe: boolean
+) {
+  const expiresIn = rememberMe ? "30d" : JWT_ACCESS_EXPIRES;
 
   return jwt.sign(payload, JWT_ACCESS_SECRET, { expiresIn } as SignOptions);
 }

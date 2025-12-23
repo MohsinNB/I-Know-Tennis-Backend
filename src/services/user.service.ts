@@ -1,7 +1,5 @@
 import { User } from "../models/user.model";
 import { hashPassword } from "../utils/hashPassword";
-import { generateOtp } from "../utils/otp";
-import { sendOtpEmail } from "./email.service";
 
 export const registerUserService = async (data: any) => {
   const { name, email, phoneNumber, password, confirmPassword, agreedToTerms } =
@@ -20,9 +18,10 @@ export const registerUserService = async (data: any) => {
     throw new Error("Email already registered");
   }
 
-  const hashedPassword = await hashPassword(password);
+  const adminEmails = process.env.ADMIN_EMAILS?.split(",") || [];
 
-  const otp = generateOtp();
+  const role = adminEmails.includes(email) ? "admin" : "user";
+  const hashedPassword = await hashPassword(password);
 
   const user = await User.create({
     name,
@@ -30,11 +29,8 @@ export const registerUserService = async (data: any) => {
     phoneNumber,
     password: hashedPassword,
     agreedToTerms,
-    emailOtp: otp,
-    emailOtpExpiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 min
+    role,
   });
-
-  await sendOtpEmail(email, otp);
 
   return user;
 };

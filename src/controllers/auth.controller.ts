@@ -66,16 +66,16 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
 export const resetPassword = async (req: Request, res: Response) => {
   try {
-    const { email, otp, newPassword } = req.body;
+    const { email, otp, createPassword, confirmPassword } = req.body;
 
-    if (!email || !otp || !newPassword) {
+    if (!email || !otp || !createPassword || !confirmPassword) {
       return sendResponse(res, status.BAD_REQUEST, {
         success: false,
         message: "All fields are required",
       });
     }
 
-    await resetPasswordService(email, otp, newPassword);
+    await resetPasswordService(email, otp, createPassword, confirmPassword);
 
     sendResponse(res, status.OK, {
       success: true,

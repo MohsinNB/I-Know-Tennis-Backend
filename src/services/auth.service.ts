@@ -21,11 +21,13 @@ export const loginUserService = async (
     throw new Error("Wrong password");
   }
 
-  if (!user.isEmailVerified) {
-    throw new Error("Please verify your email using OTP");
-  }
-
-  const token = signAccessToken({ userId: user._id.toString(), rememberMe });
+  const token = signAccessToken(
+    {
+      userId: user._id.toString(),
+      role: user.role,
+    },
+    rememberMe
+  );
 
   return {
     token,
@@ -57,7 +59,8 @@ export const forgotPasswordService = async (email: string) => {
 export const resetPasswordService = async (
   email: string,
   otp: string,
-  newPassword: string
+  createPassword: string,
+  forgetPassword: string
 ) => {
   const user = await User.findOne({ email }).select(
     "+emailOtp +emailOtpExpiresAt +password"
@@ -65,6 +68,9 @@ export const resetPasswordService = async (
 
   if (!user) {
     throw new Error("User not found");
+  }
+  if (createPassword !== forgetPassword) {
+    throw new Error("Password doesn't match");
   }
 
   if (!user.emailOtp || !user.emailOtpExpiresAt) {
@@ -79,7 +85,7 @@ export const resetPasswordService = async (
     throw new Error("OTP expired");
   }
 
-  const hashedPassword = await hashPassword(newPassword);
+  const hashedPassword = await hashPassword(createPassword);
 
   user.password = hashedPassword;
   user.emailOtp = undefined;

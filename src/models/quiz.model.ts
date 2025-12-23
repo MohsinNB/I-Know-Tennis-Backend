@@ -6,6 +6,7 @@ interface IOption {
 }
 
 interface IQuestion {
+  _id: Types.ObjectId;
   question: string;
   options: IOption[];
   points: number;
@@ -38,11 +39,12 @@ const QuizSchema = new Schema<IQuiz>(
     stack: {
       type: String,
       enum: ["newest", "popular", "most-popular"],
+      default: "newest",
       required: true,
     },
     questions: {
       type: [QuestionSchema],
-      validate: [(v: any[]) => v.length === 20, "20 questions required"],
+      // validate: [(v: any[]) => v.length === 20, "20 questions required"],
     },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
