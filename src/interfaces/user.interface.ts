@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export interface IUser extends Document {
   name: string;
@@ -14,4 +14,9 @@ export interface IUser extends Document {
 
   emailOtp?: string;
   emailOtpExpiresAt?: Date;
+
+  // 🔹 Subscription
+  subscriptionPlan: Types.ObjectId;
+  subscriptionType: "free" | "monthly" | "yearly";
+  subscriptionStart: Date;
 }

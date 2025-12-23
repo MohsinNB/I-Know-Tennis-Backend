@@ -59,6 +59,26 @@ export const UserSchema = new Schema<IUser>(
     emailOtpExpiresAt: {
       type: Date,
     },
+
+    // 🔹 Subscription
+    subscriptionPlan: {
+      type: Schema.Types.ObjectId,
+      ref: "SubscriptionPlan",
+      required: true,
+    },
+
+    subscriptionType: {
+      type: String,
+      enum: ["free", "monthly", "yearly"],
+      required: true,
+      default: "free",
+    },
+
+    subscriptionStart: {
+      type: Date,
+      required: true,
+      default: Date.now,
+    },
   },
   { timestamps: true }
 );

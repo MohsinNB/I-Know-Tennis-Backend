@@ -1,5 +1,6 @@
 import { User } from "../models/user.model";
 import { hashPassword } from "../utils/hashPassword";
+import { SubscriptionPlan } from "../models/subscription.model";
 
 export const registerUserService = async (data: any) => {
   const { name, email, phoneNumber, password, confirmPassword, agreedToTerms } =
@@ -18,6 +19,14 @@ export const registerUserService = async (data: any) => {
     throw new Error("Email already registered");
   }
 
+  const defaultPlan = await SubscriptionPlan.findOne({
+    isDefault: true,
+    isActive: true,
+  });
+
+  if (!defaultPlan) {
+    throw new Error("Default subscription plan not found");
+  }
   const adminEmails = process.env.ADMIN_EMAILS?.split(",") || [];
 
   const role = adminEmails.includes(email) ? "admin" : "user";
@@ -29,7 +38,10 @@ export const registerUserService = async (data: any) => {
     phoneNumber,
     password: hashedPassword,
     agreedToTerms,
-    role,
+    role: "user", // 🔐 always user
+    subscriptionPlan: defaultPlan._id,
+    subscriptionType: "free",
+    subscriptionStart: new Date(),
   });
 
   return user;

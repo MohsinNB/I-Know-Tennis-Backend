@@ -6,6 +6,7 @@ import profileRoutes from "./routes/profile.routes";
 import quizRoutes from "./routes/quiz.routes";
 import attemptQuizRoutes from "./routes/quizAttempt.route";
 import adminRoutes from "./routes/admin.routes";
+import subscriptionRoutes from "./routes/subscription.routes";
 const app = express();
 
 app.use(cors());
@@ -17,6 +18,7 @@ app.use("/api/auth/profile", profileRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/quiz/attempt_quiz", attemptQuizRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/subscription", subscriptionRoutes);
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
     message: "Welcome. Your app is running",

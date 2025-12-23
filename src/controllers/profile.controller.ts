@@ -2,7 +2,7 @@ import { Response } from "express";
 import { AuthRequest } from "../middlewares/auth.middleware";
 import {
   getMyProfileService,
-  updateMyNameService,
+  updateProfileService,
 } from "../services/profile.service";
 import { sendResponse } from "../utils/sendResponse";
 import status from "http-status-codes";
@@ -26,29 +26,38 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updateMyName = async (req: AuthRequest, res: Response) => {
+export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.userId as string;
     const { name } = req.body;
+    const file = req.file;
 
-    if (!name) {
+    // Check if at least one field is provided to avoid empty updates
+    if (!name && !file) {
       return sendResponse(res, status.BAD_REQUEST, {
         success: false,
-        message: "Name is required",
+        message: "Please provide a name or a profile picture to update",
       });
     }
 
-    const user = await updateMyNameService(userId, name);
+    // Call the unified service
+    const user = await updateProfileService(userId, { name, file });
 
     sendResponse(res, status.OK, {
       success: true,
-      message: "Name updated successfully",
+      message: "Profile updated successfully",
       data: user,
     });
   } catch (error: any) {
-    sendResponse(res, status.NOT_FOUND, {
+    // Determine status code based on error message or type
+    const statusCode =
+      error.message === "User not found"
+        ? status.NOT_FOUND
+        : status.INTERNAL_SERVER_ERROR;
+
+    sendResponse(res, statusCode, {
       success: false,
-      message: error.message,
+      message: error.message || "An unexpected error occurred",
     });
   }
 };
