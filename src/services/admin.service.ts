@@ -66,3 +66,40 @@ export const getAllUsersService = async () => {
     .select("_id name email phoneNumber role isEmailVerified createdAt")
     .sort({ createdAt: -1 });
 };
+
+export const getLeaderboardService = async () => {
+  return await QuizAttempt.aggregate([
+    {
+      $match: { status: "completed" },
+    },
+    {
+      $group: {
+        _id: "$userId",
+        totalScore: { $sum: "$totalScore" },
+        quizzesAttempted: { $sum: 1 },
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "_id",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    { $unwind: "$user" },
+    {
+      $project: {
+        _id: 0,
+        userId: "$user._id",
+        name: "$user.name",
+        email: "$user.email",
+        totalScore: 1,
+        quizzesAttempted: 1,
+      },
+    },
+    {
+      $sort: { totalScore: -1 },
+    },
+  ]);
+};
