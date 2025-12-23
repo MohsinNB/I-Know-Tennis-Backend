@@ -14,7 +14,7 @@ interface IQuestion {
 
 export interface IQuiz {
   title: string;
-  stack: "newest" | "popular" | "most-popular";
+  stack: "newest" | "popular" | "most_popular";
   questions: IQuestion[];
   createdBy: Types.ObjectId;
 }

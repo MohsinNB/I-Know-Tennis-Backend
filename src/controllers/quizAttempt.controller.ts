@@ -15,9 +15,7 @@ export const submitQuiz = async (req: AuthRequest, res: Response) => {
     sendResponse(res, status.OK, {
       success: true,
       message: "Quiz submitted successfully",
-      data: {
-        result,
-      },
+      data: { result },
     });
   } catch (error: any) {
     sendResponse(res, status.BAD_REQUEST, {

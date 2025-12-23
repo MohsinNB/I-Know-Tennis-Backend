@@ -2,7 +2,7 @@ import { Quiz } from "../models/quiz.model";
 import { IAnswer, QuizAttempt } from "../models/quizattempt.model";
 
 interface QuizAnswerPayload {
-  questionIndex: number;
+  questionId: string; // Changed from index to ID
   selectedOptionIndex: number;
 }
 
@@ -16,14 +16,17 @@ export const submitQuizService = async (
 
   const existingAttempt = await QuizAttempt.findOne({ userId, quizId });
   if (existingAttempt) {
-    throw new Error("Quiz already submitted");
+    throw new Error("You have already submitted this quiz");
   }
 
   let totalScore = 0;
   const evaluatedAnswers: IAnswer[] = [];
 
   for (const ans of answers) {
-    const question = quiz.questions?.[ans.questionIndex];
+    // Find question by ID instead of index
+    const question = quiz.questions.find(
+      (q) => q._id.toString() === ans.questionId
+    );
     if (!question) continue;
 
     const option = question.options?.[ans.selectedOptionIndex];
