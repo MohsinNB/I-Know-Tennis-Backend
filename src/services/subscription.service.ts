@@ -1,4 +1,7 @@
-import { SubscriptionPlan } from "../models/subscription.model";
+import {
+  ISubscriptionPlan,
+  SubscriptionPlan,
+} from "../models/subscription.model";
 
 export const createSubscriptionPlanService = async (
   name: string,
@@ -35,4 +38,26 @@ export const updateSubscriptionPlanService = async (
 
 export const getAllSubscriptionPlansService = async () => {
   return await SubscriptionPlan.find().sort({ createdAt: -1 });
+};
+
+export const deactivateSubscriptionPlanService = async (planId: string) => {
+  const plan = await SubscriptionPlan.findById(planId);
+
+  if (!plan) {
+    throw new Error("Subscription plan not found");
+  }
+
+  if (plan.isDefault) {
+    throw new Error("Default subscription plan cannot be deactivated");
+  }
+
+  if (!plan.isActive) {
+    throw new Error("Subscription plan is already inactive");
+  }
+
+  plan.isActive = false;
+
+  await plan.save();
+
+  return plan;
 };

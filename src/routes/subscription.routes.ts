@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   createSubscriptionPlan,
+  deactivateSubscriptionPlan,
   getAllSubscriptionPlans,
   updateSubscriptionPlan,
 } from "../controllers/subscription.controller";
@@ -14,5 +15,11 @@ router.post("/", authMiddleware, isAdmin, createSubscriptionPlan);
 router.get("/", authMiddleware, getAllSubscriptionPlans);
 
 router.put("/:planId", authMiddleware, isAdmin, updateSubscriptionPlan);
+router.patch(
+  "/:planId/deactivate",
+  authMiddleware,
+  isAdmin,
+  deactivateSubscriptionPlan
+);
 
 export default router;

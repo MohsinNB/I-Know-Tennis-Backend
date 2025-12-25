@@ -1,7 +1,8 @@
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import {
   forgotPasswordService,
   loginUserService,
+  resendOtpService,
   resetPasswordService,
 } from "../services/auth.service";
 import { sendResponse } from "../utils/sendResponse";
@@ -80,6 +81,31 @@ export const resetPassword = async (req: Request, res: Response) => {
     sendResponse(res, status.OK, {
       success: true,
       message: "Password reset successfully",
+    });
+  } catch (error: any) {
+    sendResponse(res, status.BAD_REQUEST, {
+      success: false,
+      message: error.message,
+    });
+  }
+};
+export const resendOtp: RequestHandler = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    const result = await resendOtpService(email);
+
+    sendResponse(res, status.OK, {
+      success: true,
+      message: "OTP sent successfully",
+      data: result,
     });
   } catch (error: any) {
     sendResponse(res, status.BAD_REQUEST, {

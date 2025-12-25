@@ -17,6 +17,7 @@ export interface IQuiz {
   stack: "newest" | "popular" | "most_popular";
   questions: IQuestion[];
   createdBy: Types.ObjectId;
+  isDeleted: Boolean;
 }
 
 const OptionSchema = new Schema<IOption>({
@@ -65,6 +66,7 @@ const QuizSchema = new Schema<IQuiz>(
         message: "Duplicate questions found in this quiz.",
       },
     },
+    isDeleted: { type: Boolean, default: false },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }

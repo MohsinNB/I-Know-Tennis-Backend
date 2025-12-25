@@ -6,7 +6,7 @@ export interface TMetadata {
 }
 export interface TResponse<T = null> {
   success: boolean;
-  message: string;
+  message?: string;
   data?: T;
   metadata?: TMetadata;
 }

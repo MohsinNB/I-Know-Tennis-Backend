@@ -1,4 +1,5 @@
 import { User } from "../models/user.model";
+import { generateAndAttachOtp } from "../utils/generateOtp";
 import { comparePassword, hashPassword } from "../utils/hashPassword";
 import { signAccessToken } from "../utils/jwt";
 import { generateOtp } from "../utils/otp";
@@ -48,7 +49,7 @@ export const forgotPasswordService = async (email: string) => {
   const otp = generateOtp();
 
   user.emailOtp = otp;
-  user.emailOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+  user.emailOtpExpiresAt = new Date(Date.now() + 0.5 * 60 * 1000);
 
   await user.save();
 
@@ -94,4 +95,20 @@ export const resetPasswordService = async (
   await user.save();
 
   return true;
+};
+export const resendOtpService = async (email: string) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  // optional safety check
+  if (!user.emailOtp) {
+    throw new Error("OTP was not requested before");
+  }
+
+  const result = await generateAndAttachOtp(user);
+
+  return result;
 };

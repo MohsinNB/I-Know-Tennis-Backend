@@ -38,7 +38,7 @@ export const registerUserService = async (data: any) => {
     phoneNumber,
     password: hashedPassword,
     agreedToTerms,
-    role: "user", // 🔐 always user
+    role: role,
     subscriptionPlan: defaultPlan._id,
     subscriptionType: "free",
     subscriptionStart: new Date(),

@@ -83,17 +83,6 @@ export const getLeaderboardService = async () => {
     },
   ]);
 };
-export const getQuizAttendanceService = async (filter: string) => {
-  const startDate = getStartDate(filter);
-
-  const count = await QuizAttempt.countDocuments({
-    status: "completed",
-    createdAt: { $gte: startDate },
-  });
-
-  return count;
-};
-
 const getStartDate = (filter: string) => {
   const now = new Date();
 
@@ -119,4 +108,43 @@ const getStartDate = (filter: string) => {
   }
 
   return now;
+};
+export const getQuizAttendanceService = async (filter: string) => {
+  const startDate = getStartDate(filter);
+
+  const count = await QuizAttempt.countDocuments({
+    status: "completed",
+    createdAt: { $gte: startDate },
+  });
+
+  return count;
+};
+export const getMonthWiseUserJoiningService = async () => {
+  const result = await User.aggregate([
+    {
+      $group: {
+        _id: {
+          year: { $year: "$createdAt" },
+          month: { $month: "$createdAt" },
+        },
+        totalUsers: { $sum: 1 },
+      },
+    },
+    {
+      $sort: {
+        "_id.year": 1,
+        "_id.month": 1,
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        year: "$_id.year",
+        month: "$_id.month",
+        totalUsers: 1,
+      },
+    },
+  ]);
+
+  return result;
 };

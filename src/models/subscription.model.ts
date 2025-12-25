@@ -19,18 +19,14 @@ const SubscriptionSchema = new Schema<ISubscriptionPlan>(
   { timestamps: true }
 );
 
-// 🔥 The "One True Only" Logic
 SubscriptionSchema.pre("save", async function (this: any) {
-  // We only care if the document is being set to isDefault: true
   if (this.isDefault) {
     try {
-      // Use this.constructor to refer to the Model
       await (this.constructor as any).updateMany(
         { _id: { $ne: this._id } },
         { $set: { isDefault: false } }
       );
     } catch (error) {
-      // In async hooks, throwing an error automatically stops the save
       throw error;
     }
   }

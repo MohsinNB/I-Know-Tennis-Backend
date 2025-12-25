@@ -1,5 +1,5 @@
 import { Schema, Types, model } from "mongoose";
-import { IQuiz, Quiz } from "./quiz.model"; // Ensure this path is correct
+import { IQuiz, Quiz } from "./quiz.model";
 
 export interface IAnswer {
   questionId: Types.ObjectId;
@@ -38,7 +38,7 @@ const QuizAttemptSchema = new Schema<IQuizAttempt>(
   { timestamps: true }
 );
 
-// 🔥 AUTOMATION: Update Quiz Stack based on submission count
+//  Update Quiz Stack based on submission count
 QuizAttemptSchema.post("save", async function (doc) {
   try {
     const attemptCount = await model("QuizAttempt").countDocuments({

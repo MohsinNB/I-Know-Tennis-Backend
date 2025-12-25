@@ -2,7 +2,7 @@ import { Quiz } from "../models/quiz.model";
 import { IAnswer, QuizAttempt } from "../models/quizattempt.model";
 
 interface QuizAnswerPayload {
-  questionId: string; // Changed from index to ID
+  questionId: string;
   selectedOptionIndex: number;
 }
 
