@@ -1,6 +1,7 @@
 import { User } from "../models/user.model";
 import { hashPassword } from "../utils/hashPassword";
 import { SubscriptionPlan } from "../models/subscription.model";
+import { IUser } from "../interfaces/user.interface";
 
 export const registerUserService = async (data: any) => {
   const { name, email, phoneNumber, password, confirmPassword, agreedToTerms } =
@@ -31,6 +32,10 @@ export const registerUserService = async (data: any) => {
 
   const role = adminEmails.includes(email) ? "admin" : "user";
   const hashedPassword = await hashPassword(password);
+  const subscriptionPlan =
+    defaultPlan.monthlyPrice === 0 && defaultPlan.yearlyPrice === 0
+      ? defaultPlan._id
+      : null;
 
   const user = await User.create({
     name,
@@ -38,11 +43,11 @@ export const registerUserService = async (data: any) => {
     phoneNumber,
     password: hashedPassword,
     agreedToTerms,
-    role: role,
-    subscriptionPlan: defaultPlan._id,
-    subscriptionType: "free",
-    subscriptionStart: new Date(),
-  });
+    role,
+    subscriptionPlan,
+    subscriptionType: subscriptionPlan ? "free" : null,
+    subscriptionStart: subscriptionPlan ? new Date() : null,
+  } as IUser);
 
   return user;
 };

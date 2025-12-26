@@ -19,3 +19,6 @@ export const JWT_REFRESH_EXPIRES = get("JWT_REFRESH_EXPIRES", "30d");
 export const BCRYPT_SALT_ROUND: number = Number(get("BCRYPT_SALT_ROUND", "10"));
 export const EMAIL_USER = get("EMAIL_USER");
 export const EMAIL_PASS = get("EMAIL_PASS");
+export const STRIPE_SECRET_KEY = get("STRIPE_SECRET_KEY");
+export const STRIPE_WEBHOOK_SECRET = get("STRIPE_WEBHOOK_SECRET");
+export const CLIENT_URL = get("CLIENT_URL");

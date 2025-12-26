@@ -16,7 +16,7 @@ export interface IUser extends Document {
   emailOtpExpiresAt?: Date;
 
   // 🔹 Subscription
-  subscriptionPlan: Types.ObjectId;
-  subscriptionType: "free" | "monthly" | "yearly";
-  subscriptionStart: Date;
+  subscriptionPlan?: Types.ObjectId;
+  subscriptionType?: "free" | "monthly" | "yearly";
+  subscriptionStart?: Date;
 }

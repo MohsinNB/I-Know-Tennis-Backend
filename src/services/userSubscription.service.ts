@@ -1,53 +1,79 @@
 import { SubscriptionPlan } from "../models/subscription.model";
+import { User } from "../models/user.model";
 import { UserSubscription } from "../models/userSubscription.model";
-import { Types } from "mongoose";
+import mongoose, { ClientSession, Types } from "mongoose";
 
 export const buySubscriptionService = async (
   userId: string,
   planId: string,
-  billingCycle: "monthly" | "yearly"
+  billingCycle: "monthly" | "yearly",
+  stripeSessionId?: string
 ) => {
-  const plan = await SubscriptionPlan.findById(planId);
-
-  if (!plan) {
-    throw new Error("Subscription plan not found");
+  // 1. Idempotency Check
+  if (stripeSessionId) {
+    const alreadyProcessed = await UserSubscription.findOne({
+      stripeSessionId,
+    });
+    if (alreadyProcessed) return alreadyProcessed;
   }
 
-  if (!plan.isActive) {
-    throw new Error("This subscription plan is inactive");
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const plan = await SubscriptionPlan.findById(planId).session(session);
+    if (!plan) throw new Error("Plan not found");
+
+    const startDate = new Date();
+    const endDate = new Date(startDate);
+    billingCycle === "monthly"
+      ? endDate.setMonth(endDate.getMonth() + 1)
+      : endDate.setFullYear(endDate.getFullYear() + 1);
+
+    // 2. Build Dynamic Update Object
+    const subscriptionUpdate: any = {
+      plan: plan._id,
+      startDate,
+      endDate,
+      status: "active",
+    };
+
+    // ONLY add the key if it exists. NEVER use "manual_override"
+    if (stripeSessionId) {
+      subscriptionUpdate.stripeSessionId = stripeSessionId;
+    }
+
+    const updatedSub = await UserSubscription.findOneAndUpdate(
+      { user: userId },
+      { $set: subscriptionUpdate },
+      { session, upsert: true, new: true }
+    );
+
+    // 3. Sync User Type (Free vs Paid)
+    const price =
+      billingCycle === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
+    const type = price > 0 ? "paid" : "free";
+
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          subscriptionPlan: plan._id,
+          subscriptionType: type,
+          subscriptionStart: startDate,
+        },
+      },
+      { session }
+    );
+
+    await session.commitTransaction();
+    return updatedSub;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-
-  const existing = await UserSubscription.findOne({ user: userId });
-
-  if (existing && existing.plan.toString() === planId) {
-    throw new Error("You already have this subscription plan");
-  }
-
-  const startDate = new Date();
-  const endDate = new Date(startDate);
-
-  if (billingCycle === "monthly") {
-    endDate.setDate(endDate.getDate() + 30);
-  } else {
-    endDate.setDate(endDate.getDate() + 365);
-  }
-
-  if (existing) {
-    existing.plan = plan._id as Types.ObjectId;
-    existing.startDate = startDate;
-    existing.endDate = endDate;
-    existing.status = "active";
-
-    return await existing.save();
-  }
-
-  return await UserSubscription.create({
-    user: userId,
-    plan: plan._id,
-    startDate,
-    endDate,
-    status: "active",
-  });
 };
 
 export const getMySubscriptionService = async (userId: string) => {

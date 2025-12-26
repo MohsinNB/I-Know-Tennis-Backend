@@ -64,19 +64,19 @@ export const UserSchema = new Schema<IUser>(
     subscriptionPlan: {
       type: Schema.Types.ObjectId,
       ref: "SubscriptionPlan",
-      required: true,
+      required: false,
     },
 
     subscriptionType: {
       type: String,
       enum: ["free", "monthly", "yearly"],
-      required: true,
+      required: false,
       default: "free",
     },
 
     subscriptionStart: {
       type: Date,
-      required: true,
+      required: false,
       default: Date.now,
     },
   },

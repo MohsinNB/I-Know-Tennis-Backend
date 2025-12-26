@@ -28,11 +28,8 @@ export const updateSubscriptionPlanService = async (
   const plan = await SubscriptionPlan.findById(planId);
   if (!plan) throw new Error("Plan not found");
 
-  // Merge the updates into the document
   Object.assign(plan, updateData);
 
-  // We use .save() instead of findByIdAndUpdate
-  // so the 'pre-save' hook in the model is triggered!
   return await plan.save();
 };
 

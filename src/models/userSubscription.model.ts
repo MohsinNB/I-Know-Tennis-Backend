@@ -6,6 +6,7 @@ export interface IUserSubscription {
   startDate: Date;
   endDate: Date;
   status: "active" | "expired" | "canceled";
+  stripeSessionId?: string;
 }
 
 const UserSubscriptionSchema = new Schema<IUserSubscription>(
@@ -14,7 +15,7 @@ const UserSubscriptionSchema = new Schema<IUserSubscription>(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true, // 👈 one subscription per user
+      unique: true, //  one subscription per user
     },
     plan: {
       type: Schema.Types.ObjectId,
@@ -24,6 +25,12 @@ const UserSubscriptionSchema = new Schema<IUserSubscription>(
     startDate: {
       type: Date,
       required: true,
+    },
+    stripeSessionId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      default: null,
     },
     endDate: {
       type: Date,
