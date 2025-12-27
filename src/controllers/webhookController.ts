@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import Stripe from "stripe";
 import { STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET } from "../app/config/env";
 import { buySubscriptionService } from "../services/userSubscription.service";
+import { notifyUser } from "../services/notification.service";
+import { NotificationType } from "../models/notification.model";
 
 const stripe = new Stripe(STRIPE_SECRET_KEY!, {
   apiVersion: "2025-12-15.clover",
@@ -38,6 +40,13 @@ export const stripeWebhook = async (req: Request, res: Response) => {
     try {
       await buySubscriptionService(userId, planId, billingCycle);
       console.log("Subscription activated via webhook");
+
+      await notifyUser({
+        recipientId: userId, // valid user _id
+        type: NotificationType.SUBSCRIPTION_ACTIVATED,
+        title: "Test Notification",
+        message: "Notification from webhook",
+      });
     } catch (error) {
       console.error(" Subscription activation failed:", error);
     }

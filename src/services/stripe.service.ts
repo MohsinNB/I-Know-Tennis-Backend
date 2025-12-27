@@ -24,12 +24,8 @@ export const createCheckoutSessionService = async (
   if (!user) {
     throw new Error("User not found in DB");
   }
-  console.log("Upper of expected error");
-  console.log(user);
-  console.log(user.subscriptionPlan?.toString());
-  console.log(planId);
+
   if (user.subscriptionPlan?.toString() === planId) {
-    console.log(user);
     throw new Error("You already have this plan");
   }
   const session = await stripe.checkout.sessions.create({

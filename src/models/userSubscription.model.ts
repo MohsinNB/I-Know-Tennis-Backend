@@ -30,7 +30,6 @@ const UserSubscriptionSchema = new Schema<IUserSubscription>(
       type: String,
       unique: true,
       sparse: true,
-      default: null,
     },
     endDate: {
       type: Date,

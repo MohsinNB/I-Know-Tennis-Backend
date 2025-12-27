@@ -2,6 +2,8 @@ import { Server } from "http";
 import mongoose from "mongoose";
 import { DB_URL, PORT } from "./app/config/env";
 import app from "./app";
+import http from "http";
+import { initSocket } from "./socket/socket";
 
 let server: Server;
 
@@ -9,9 +11,15 @@ const startServer = async () => {
   try {
     await mongoose.connect(DB_URL);
     console.log("Connected to database");
-    server = app.listen(PORT, () => {
+    const server = http.createServer(app);
+    initSocket(server);
+
+    server.listen(PORT, () => {
       console.log(`Server is listening on port ${PORT}`);
     });
+    // server = app.listen(PORT, () => {
+    //   console.log(`Server is listening on port ${PORT}`);
+    // });
   } catch (error) {
     console.log("Failed to connect server", error);
   }
