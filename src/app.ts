@@ -13,6 +13,7 @@ import stripeRoutes from "./routes/stripe.route";
 import { stripeWebhook } from "./controllers/webhookController";
 import { initSocket } from "./socket/socket";
 import notificationRoutes from "./routes/notification.route";
+import path from "path";
 const app = express();
 
 const server = http.createServer(app);
@@ -24,7 +25,14 @@ app.post(
   express.raw({ type: "application/json" }),
   stripeWebhook
 );
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "./views"));
+app.use(express.static("public"));
 app.use(express.json());
+
+app.get("/dev/notifications", (req, res) => {
+  return res.render("notifications");
+});
 
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);

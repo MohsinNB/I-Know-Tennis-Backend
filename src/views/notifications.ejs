@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Notification Test Panel</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f5f6fa;
+        padding: 20px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .badge {
+        background: red;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 50%;
+        font-size: 12px;
+      }
+
+      .notification {
+        background: white;
+        padding: 12px;
+        border-radius: 6px;
+        margin-top: 10px;
+        border-left: 4px solid #3498db;
+      }
+
+      .notification.unread {
+        background: #eef6ff;
+        font-weight: bold;
+      }
+
+      button {
+        margin-top: 8px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h2>🔔 Notifications</h2>
+      <div>Unread: <span id="unreadCount" class="badge">0</span></div>
+    </div>
+
+    <div>
+      <input id="userIdInput" placeholder="Enter User ID" />
+      <input
+        id="tokenInput"
+        placeholder="Paste JWT token"
+        style="width: 300px"
+      />
+      <button onclick="connect()">Connect</button>
+    </div>
+
+    <div id="notifications"></div>
+
+    <!-- Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/notifications.js"></script>
+  </body>
+</html>
